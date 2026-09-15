@@ -11,6 +11,11 @@ app = FastAPI(
     description="Transporter Assignment Optimization API",
     version="1.0.0",
 )
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy"
+    }
 
 
 class AssignmentRequest(BaseModel):
