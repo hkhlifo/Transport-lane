@@ -77,3 +77,27 @@ def test_generate_transporter_assignment():
     assert data["totalCost"] == 21000
     assert data["assignments"]["Lane 1"] == "T1"
     assert data["assignments"]["Lane 2"] == "T2"
+    
+
+def test_assignment_rejects_invalid_max_transporters():
+    response = client.post(
+        "/api/v1/transporters/assignment",
+        json={"maxTransporters": 0}
+    )
+
+    assert response.status_code == 422
+    
+def test_assignment_fails_without_input():
+    from app.services import storage
+
+    storage.transporter_quotes.clear()
+
+    response = client.post(
+        "/api/v1/transporters/assignment",
+        json={"maxTransporters": 2}
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "Transporter quotes have not been submitted"
+    )

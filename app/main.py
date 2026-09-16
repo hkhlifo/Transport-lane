@@ -4,6 +4,10 @@ from pydantic import BaseModel, Field
 from app.models.transporter import TransporterInput
 from app.services.storage import transporter_quotes
 from app.services.optimizer import optimize_assignments
+from app.services.storage import (
+    get_quotes,
+    save_quotes,
+)
 
 
 app = FastAPI(
@@ -24,17 +28,17 @@ class AssignmentRequest(BaseModel):
 
 @app.post("/api/v1/transporters/input")
 def submit_transporter_quotes(data: TransporterInput):
-    global transporter_quotes
 
-    transporter_quotes = {
+    quotes = {
         lane.lane: lane.quotes
         for lane in data.lanes
     }
 
+    save_quotes(quotes)
+
     return {
         "message": "Transporter quotes received successfully"
     }
-
 
 @app.post("/api/v1/transporters/assignment")
 def generate_assignment(data: AssignmentRequest):
