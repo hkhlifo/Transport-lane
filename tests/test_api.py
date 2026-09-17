@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from app.services.storage import clear_quotes
 
 from app.main import app
 
@@ -120,3 +121,41 @@ def test_rejects_negative_transporter_quote():
     )
 
     assert response.status_code == 422
+    
+    
+def test_assignment_fails_when_lane_coverage_is_impossible():
+    clear_quotes()
+
+    payload = {
+        "lanes": [
+            {
+                "lane": "Lane 1",
+                "quotes": {
+                    "T1": 10000
+                }
+            },
+            {
+                "lane": "Lane 2",
+                "quotes": {
+                    "T2": 12000
+                }
+            }
+        ]
+    }
+
+    input_response = client.post(
+        "/api/v1/transporters/input",
+        json=payload
+    )
+
+    assert input_response.status_code == 200
+
+    response = client.post(
+        "/api/v1/transporters/assignment",
+        json={"maxTransporters": 1}
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == (
+        "Unable to find a valid assignment"
+    )
