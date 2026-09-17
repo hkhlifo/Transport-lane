@@ -101,3 +101,22 @@ def test_assignment_fails_without_input():
     assert response.json()["detail"] == (
         "Transporter quotes have not been submitted"
     )
+    
+def test_rejects_negative_transporter_quote():
+    payload = {
+        "lanes": [
+            {
+                "lane": "Lane 1",
+                "quotes": {
+                    "T1": -5000
+                }
+            }
+        ]
+    }
+
+    response = client.post(
+        "/api/v1/transporters/input",
+        json=payload
+    )
+
+    assert response.status_code == 422
