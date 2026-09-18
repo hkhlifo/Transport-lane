@@ -159,3 +159,11 @@ def test_assignment_fails_when_lane_coverage_is_impossible():
     assert response.json()["detail"] == (
         "Unable to find a valid assignment"
     )
+    
+def test_health_check():
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "healthy"
+    }
