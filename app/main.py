@@ -1,13 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from app.models.transporter import TransporterInput
-from app.services.storage import transporter_quotes
-from app.services.optimizer import optimize_assignments
+from app.models.transporter import (
+    TransporterInput,
+    AssignmentResponse,
+)
 from app.services.storage import (
     get_quotes,
     save_quotes,
 )
+from app.services.optimizer import optimize_assignments
 
 
 app = FastAPI(
@@ -15,6 +17,8 @@ app = FastAPI(
     description="Transporter Assignment Optimization API",
     version="1.0.0",
 )
+
+
 @app.get("/health")
 def health_check():
     return {
@@ -40,17 +44,23 @@ def submit_transporter_quotes(data: TransporterInput):
         "message": "Transporter quotes received successfully"
     }
 
-@app.post("/api/v1/transporters/assignment")
+
+@app.post(
+    "/api/v1/transporters/assignment",
+    response_model=AssignmentResponse
+)
 def generate_assignment(data: AssignmentRequest):
 
-    if not transporter_quotes:
+    quotes = get_quotes()
+
+    if not quotes:
         raise HTTPException(
             status_code=400,
             detail="Transporter quotes have not been submitted"
         )
 
     result = optimize_assignments(
-        transporter_quotes,
+        quotes,
         data.maxTransporters
     )
 

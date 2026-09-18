@@ -13,3 +13,10 @@ class LaneQuote(BaseModel):
 
 class TransporterInput(BaseModel):
     lanes: list[LaneQuote] = Field(..., min_length=1)
+  
+  
+class AssignmentResponse(BaseModel):
+    totalCost: float
+    assignments: dict[str, str]
+    transporters: list[str]  
+    
