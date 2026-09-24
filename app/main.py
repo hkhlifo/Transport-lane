@@ -19,7 +19,12 @@ app = FastAPI(
 )
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    tags=["Health"],
+    summary="Health check",
+    description="Returns the current health status of the FreightOpt API.",
+)
 def health_check():
     return {
         "status": "healthy"
@@ -30,7 +35,15 @@ class AssignmentRequest(BaseModel):
     maxTransporters: int = Field(..., gt=0)
 
 
-@app.post("/api/v1/transporters/input")
+@app.post(
+    "/api/v1/transporters/input",
+    tags=["Transporter Assignment"],
+    summary="Submit transporter quotes",
+    description=(
+        "Accepts trade lanes and transporter quotes that will be "
+        "used for optimization."
+    ),
+)
 def submit_transporter_quotes(data: TransporterInput):
 
     quotes = {
@@ -47,7 +60,13 @@ def submit_transporter_quotes(data: TransporterInput):
 
 @app.post(
     "/api/v1/transporters/assignment",
-    response_model=AssignmentResponse
+    response_model=AssignmentResponse,
+    tags=["Transporter Assignment"],
+    summary="Generate optimized transporter assignment",
+    description=(
+        "Generates a cost-optimized transporter assignment while "
+        "respecting the maximum transporter limit and full lane coverage."
+    ),
 )
 def generate_assignment(data: AssignmentRequest):
 
