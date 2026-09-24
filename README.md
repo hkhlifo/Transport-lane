@@ -214,12 +214,12 @@ The exact interpretation of "maximize transporter usage" can be ambiguous when f
 
 The API validates:
 
-* At least one lane must be provided.
-* Each lane must have at least one transporter quote.
-* Transporter quotes cannot be negative.
-* `maxTransporters` must be greater than zero.
-* An assignment cannot be generated before quotes are submitted.
-* An error is returned when full lane coverage is impossible.
+- At least one lane must be provided.
+- Each lane must have at least one transporter quote.
+- Transporter quotes cannot be negative.
+- `maxTransporters` must be greater than zero.
+- An assignment cannot be generated before quotes are submitted.
+- An error is returned when full lane coverage is impossible.
 
 ---
 
