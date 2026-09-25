@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-
 from app.models.transporter import (
     TransporterInput,
     AssignmentResponse,
@@ -10,7 +9,6 @@ from app.services.storage import (
     save_quotes,
 )
 from app.services.optimizer import optimize_assignments
-
 
 app = FastAPI(
     title="FreightOpt",
@@ -29,7 +27,6 @@ def health_check():
     return {
         "status": "healthy"
     }
-
 
 class AssignmentRequest(BaseModel):
     maxTransporters: int = Field(..., gt=0)
@@ -56,7 +53,6 @@ def submit_transporter_quotes(data: TransporterInput):
     return {
         "message": "Transporter quotes received successfully"
     }
-
 
 @app.post(
     "/api/v1/transporters/assignment",

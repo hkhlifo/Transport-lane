@@ -119,7 +119,6 @@ def test_optimizer_with_freightfox_data():
             "T7": 31286,
         },
     }
-
     result = optimize_assignments(
         quotes,
         max_transporters=3,
