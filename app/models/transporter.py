@@ -20,3 +20,5 @@ class AssignmentResponse(BaseModel):
     assignments: dict[str, str]
     transporters: list[str]  
     
+class ErrorResponse(BaseModel):
+    detail: str
