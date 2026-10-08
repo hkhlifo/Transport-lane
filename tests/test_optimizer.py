@@ -128,3 +128,67 @@ def test_optimizer_with_freightfox_data():
     assert result["total_cost"] == 134876
     assert len(result["transporters"]) == 3
     assert len(result["assignments"]) == 9
+    
+def test_transporter_list_contains_only_actually_used_transporters():
+    quotes = {
+        "L1": {
+            "T1": 10,
+            "T2": 20,
+            "T3": 100,
+        },
+        "L2": {
+            "T1": 10,
+            "T2": 20,
+            "T3": 100,
+        },
+    }
+
+    result = optimize_assignments(
+        quotes,
+        max_transporters=3,
+    )
+
+    assert result is not None
+    assert result["transporters"] == ["T1"]
+    assert len(result["transporters"]) == 1
+    
+def test_optimizer_never_exceeds_max_transporters():
+    quotes = {
+        "L1": {
+            "T1": 10,
+            "T2": 20,
+            "T3": 30,
+            "T4": 40,
+        },
+        "L2": {
+            "T1": 40,
+            "T2": 10,
+            "T3": 20,
+            "T4": 30,
+        },
+        "L3": {
+            "T1": 30,
+            "T2": 40,
+            "T3": 10,
+            "T4": 20,
+        },
+        "L4": {
+            "T1": 20,
+            "T2": 30,
+            "T3": 40,
+            "T4": 10,
+        },
+    }
+
+    max_transporters = 2
+
+    result = optimize_assignments(
+        quotes,
+        max_transporters=max_transporters,
+    )
+
+    assert result is not None
+
+    assert len(result["transporters"]) <= max_transporters
+
+    assert len(result["assignments"]) == len(quotes)
