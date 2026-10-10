@@ -192,3 +192,22 @@ def test_optimizer_never_exceeds_max_transporters():
     assert len(result["transporters"]) <= max_transporters
 
     assert len(result["assignments"]) == len(quotes)
+    
+def test_optimizer_minimizes_cost_across_transporter_counts():
+    quotes = {
+        "L1": {"T1": 10, "T2": 15},
+        "L2": {"T1": 10, "T2": 15},
+    }
+
+    result = optimize_assignments(
+        quotes,
+        max_transporters=2,
+    )
+
+    assert result is not None
+    assert result["total_cost"] == 20
+    assert result["assignments"] == {
+        "L1": "T1",
+        "L2": "T1",
+    }
+    assert result["transporters"] == ["T1"]
