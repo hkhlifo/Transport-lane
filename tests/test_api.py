@@ -1,5 +1,10 @@
 from fastapi.testclient import TestClient
 from app.services.storage import clear_quotes
+import pytest
+from fastapi.testclient import TestClient
+
+from app.main import app
+from app.services.storage import clear_quotes
 
 from app.main import app
 
@@ -303,3 +308,9 @@ def test_freightfox_dataset_assignment():
     assert data["totalCost"] == 134876
     assert len(data["assignments"]) == 9
     assert len(data["transporters"]) == 3
+    
+@pytest.fixture(autouse=True)
+def reset_transporter_quotes():
+    clear_quotes()
+    yield
+    clear_quotes()
