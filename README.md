@@ -194,21 +194,21 @@ This approach was chosen because the assignment requires optimization over a bou
 
 ## Optimization Objectives
 
-The assignment describes three objectives:
+The implementation uses the following interpretation of the assignment requirements:
 
-1. Full lane coverage.
-2. Maximum transporter usage up to the requested limit.
-3. Cost minimization.
+1. **Full lane coverage:** Every lane must receive exactly one transporter assignment.
+2. **Transporter limit:** The number of transporters actually used must not exceed `maxTransporters`.
+3. **Cost minimization:** Among all feasible assignments, select the assignment with the lowest total quoted cost.
 
-For this implementation, the objectives are interpreted as:
+The optimizer evaluates transporter groups of different sizes, from one transporter up to the specified limit. This allows it to find a lower-cost solution without unnecessarily requiring the maximum number of transporters.
 
-```text
-1. Find a feasible solution covering every lane.
-2. Respect the maximum transporter limit.
-3. Minimize total cost among feasible assignments.
-```
+### Assumption
 
-The exact interpretation of "maximize transporter usage" can be ambiguous when fewer transporters can achieve the same or lower cost. Therefore, the implementation prioritizes the explicit maximum limit as a constraint and cost minimization among valid solutions.
+The assignment also mentions maximizing transporter usage. This implementation interprets `maxTransporters` as an upper bound rather than a requirement to use the maximum possible number of transporters. The lowest-cost feasible assignment takes priority under this interpretation.
+
+### Limitations
+
+The optimizer uses exhaustive transporter-group enumeration. This is appropriate for the small dataset supplied with the assignment, but the number of combinations grows rapidly as the number of transporters increases. Larger workloads may require a more scalable optimization approach.
 
 ---
 
