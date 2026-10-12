@@ -314,3 +314,34 @@ def reset_transporter_quotes():
     clear_quotes()
     yield
     clear_quotes()
+    
+    
+def test_rejects_duplicate_lane_names():
+    payload = {
+        "lanes": [
+            {"lane": "Lane 1", "quotes": {"T1": 100}},
+            {"lane": "Lane 1", "quotes": {"T2": 200}},
+        ]
+    }
+
+    response = client.post(
+        "/api/v1/transporters/input",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_rejects_blank_lane_name():
+    payload = {
+        "lanes": [
+            {"lane": "   ", "quotes": {"T1": 100}},
+        ]
+    }
+
+    response = client.post(
+        "/api/v1/transporters/input",
+        json=payload,
+    )
+
+    assert response.status_code == 422
