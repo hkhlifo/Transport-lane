@@ -1,11 +1,35 @@
 from itertools import combinations
+from math import isfinite
 
 
 def optimize_assignments(quotes, max_transporters):
-    if not quotes or max_transporters <= 0:
+    if not isinstance(max_transporters, int) or isinstance(max_transporters, bool):
+        raise ValueError("max_transporters must be a positive integer")
+
+    if max_transporters <= 0:
+        raise ValueError("max_transporters must be a positive integer")
+
+    if not isinstance(quotes, dict) or not quotes:
         return None
 
-    lanes = list(quotes.keys())
+    for lane, lane_quotes in quotes.items():
+        if not isinstance(lane, str) or not lane.strip():
+            raise ValueError("Lane names must be non-empty strings")
+
+        if not isinstance(lane_quotes, dict) or not lane_quotes:
+            return None
+
+        for transporter, cost in lane_quotes.items():
+            if not isinstance(transporter, str) or not transporter.strip():
+                raise ValueError("Transporter names must be non-empty strings")
+
+            if (
+                isinstance(cost, bool)
+                or not isinstance(cost, (int, float))
+                or not isfinite(cost)
+                or cost < 0
+            ):
+                raise ValueError("Quotes must be finite, non-negative numbers")
 
     transporters = sorted({
         transporter
@@ -16,7 +40,6 @@ def optimize_assignments(quotes, max_transporters):
     max_group_size = min(max_transporters, len(transporters))
     best_solution = None
 
-    # Examine every possible group size within the limit.
     for number_of_transporters in range(1, max_group_size + 1):
         for transporter_group in combinations(
             transporters,
@@ -25,14 +48,13 @@ def optimize_assignments(quotes, max_transporters):
             assignments = {}
             total_cost = 0
 
-            for lane in lanes:
+            for lane, lane_quotes in quotes.items():
                 available_quotes = {
-                    transporter: quotes[lane][transporter]
+                    transporter: lane_quotes[transporter]
                     for transporter in transporter_group
-                    if transporter in quotes[lane]
+                    if transporter in lane_quotes
                 }
 
-                # This group cannot cover every lane.
                 if not available_quotes:
                     break
 

@@ -211,3 +211,44 @@ def test_optimizer_minimizes_cost_across_transporter_counts():
         "L2": "T1",
     }
     assert result["transporters"] == ["T1"]
+
+import pytest
+
+
+def test_optimizer_rejects_zero_transporter_limit():
+    with pytest.raises(ValueError):
+        optimize_assignments(
+            {"L1": {"T1": 100}},
+            max_transporters=0,
+        )
+
+
+def test_optimizer_rejects_negative_quote():
+    with pytest.raises(ValueError):
+        optimize_assignments(
+            {"L1": {"T1": -100}},
+            max_transporters=1,
+        )
+
+
+def test_optimizer_rejects_non_finite_quote():
+    with pytest.raises(ValueError):
+        optimize_assignments(
+            {"L1": {"T1": float("nan")}},
+            max_transporters=1,
+        )
+
+
+def test_optimizer_returns_none_when_lane_has_no_quotes():
+    result = optimize_assignments(
+        {
+            "L1": {"T1": 100},
+            "L2": {},
+        },
+        max_transporters=1,
+    )
+
+    assert result is None
+    
+    
+    
