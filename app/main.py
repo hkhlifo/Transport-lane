@@ -48,7 +48,6 @@ class AssignmentRequest(BaseModel):
     ),
 )
 def submit_transporter_quotes(data: TransporterInput):
-
     quotes = {
         lane.lane: lane.quotes
         for lane in data.lanes
@@ -78,24 +77,29 @@ def submit_transporter_quotes(data: TransporterInput):
     ),
 )
 def generate_assignment(data: AssignmentRequest):
-
     quotes = get_quotes()
 
     if not quotes:
         raise HTTPException(
             status_code=400,
-            detail="Transporter quotes have not been submitted"
+            detail="Transporter quotes have not been submitted",
         )
 
-    result = optimize_assignments(
-        quotes,
-        data.maxTransporters
-    )
+    try:
+        result = optimize_assignments(
+            quotes,
+            data.maxTransporters,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
     if result is None:
         raise HTTPException(
             status_code=400,
-            detail="Unable to find a valid assignment"
+            detail="Unable to find a valid assignment",
         )
 
     return {
